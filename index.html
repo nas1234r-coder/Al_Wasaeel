@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>الوسائل التعليمية</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#1f3a4d">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="الوسائل التعليمية">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #1f3a4d;
+            --muted: #5d6f78;
+            --paper: #f3f6f4;
+            --gold: #c9a24b;
+            --font-ui: 'IBM Plex Sans Arabic', 'Tahoma', 'Segoe UI', sans-serif;
+            --font-title: 'Amiri', 'Traditional Arabic', 'Times New Roman', serif;
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: var(--font-ui);
+            margin: 0;
+            padding: 60px 15px 15px;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--ink);
+            background-color: var(--paper);
+            background-image:
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%231f3a4d' stroke-opacity='0.06' stroke-width='1.2'%3E%3Cpath d='M40 6l9.5 20.5L70 36l-20.5 9.5L40 66l-9.5-20.5L10 36l20.5-9.5z'/%3E%3Ccircle cx='40' cy='36' r='9'/%3E%3C/g%3E%3C/svg%3E"),
+                linear-gradient(160deg, #eef4f1 0%, #f7f3e8 100%);
+            background-attachment: fixed;
+        }
+
+        /* ===== زر الخروج: ثابت في كل الصفحات ===== */
+        .exit-fixed {
+            position: fixed; top: 10px; left: 10px; z-index: 1500;
+            font-family: var(--font-ui); font-weight: 700; font-size: 1rem;
+            background: #c0392b; color: #fff; border: none; border-radius: 999px;
+            padding: 9px 22px; cursor: pointer;
+            box-shadow: 0 3px 0 #7b241c, 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .exit-fixed:hover { background: #a93226; }
+        .exit-fixed:active { transform: translateY(2px); box-shadow: 0 1px 0 #7b241c; }
+
+        #main-content { width: 100%; display: flex; flex-direction: column; align-items: center; }
+
+        /* ===== الرأس ===== */
+        .header { text-align: center; margin-bottom: 20px; }
+        .logo-card { display: inline-block; margin-bottom: 8px; max-width: 94%; }
+        .logo { display: block; height: clamp(120px, 22vh, 190px); width: auto; max-width: 100%; object-fit: contain; mix-blend-mode: multiply; }
+        .header h1 {
+            font-family: var(--font-title); font-weight: 700; color: var(--ink);
+            font-size: clamp(1.5rem, 3.4vw, 2.5rem); margin: 0; line-height: 1.7;
+        }
+        .divider {
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            margin: 2px auto 0; width: min(360px, 70%); color: var(--gold); font-size: 1.4rem;
+        }
+        .divider::before, .divider::after { content: ""; flex: 1; height: 2px; background: linear-gradient(to left, var(--gold), transparent); }
+        .divider::after { background: linear-gradient(to right, var(--gold), transparent); }
+
+        /* ===== الأزرار ===== */
+        .menu-grid { display: grid; gap: 16px; width: 100%; padding-bottom: 8px; }
+
+        @media (orientation: portrait) {
+            .menu-grid { grid-template-columns: repeat(2, 1fr); max-width: 480px; gap: 14px; }
+            .btn { height: clamp(92px, 12vh, 125px); font-size: clamp(1.05rem, 4.4vw, 1.3rem); }
+        }
+        @media (orientation: landscape) {
+            body { padding-top: 10px; padding-bottom: 10px; align-items: safe center; }
+            .menu-grid { grid-template-columns: repeat(4, 1fr); max-width: min(960px, 94vw); gap: 16px; }
+            .menu-grid .btn { height: clamp(66px, 12.5vh, 100px); font-size: clamp(1rem, 1.55vw, 1.35rem); border-radius: 20px; gap: 6px; }
+            .menu-grid .btn .ico { font-size: 1.6em; }
+            .header { display: block; margin-bottom: clamp(6px, 1.6vh, 14px); }
+            .logo-card { margin: 0 0 2px; max-width: 100%; }
+            .logo { height: clamp(110px, 36vh, 320px); width: auto; max-width: 100%; margin: 0 auto; }
+            .header h1 { line-height: 1.45; font-size: clamp(1.5rem, 2.6vw, 2.2rem); }
+            .divider { width: min(320px, 60%); margin: 0 auto; font-size: 1.2rem; }
+        }
+
+        .btn {
+            padding: 8px; border-radius: 16px; border: none; color: white;
+            font-family: inherit; font-weight: 700; line-height: 1.3; cursor: pointer;
+            text-align: center; position: relative; overflow: hidden;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.35), 0 8px 12px rgba(0,0,0,0.22);
+            transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 4px; width: 100%;
+            animation: rise 0.5s ease both; animation-delay: calc(var(--i) * 60ms);
+        }
+        .btn .ico { font-size: 1.35em; line-height: 1; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.25)); }
+        .btn::after { content: "۞"; position: absolute; top: 2px; right: 8px; font-size: 1rem; opacity: 0.35; }
+        .btn:hover { transform: translateY(-2px) scale(1.03); filter: brightness(1.12); }
+        .btn:active { transform: translateY(4px); box-shadow: 0 1px 0 rgba(0,0,0,0.35), 0 2px 5px rgba(0,0,0,0.2); }
+        .btn:focus-visible, .nav-btn:focus-visible, .round-btn:focus-visible, .exit-fixed:focus-visible, .bar-btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+        @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+        .islamic { background: linear-gradient(135deg, #2c3e50, #4a69bd); }
+        .arabic  { background: linear-gradient(135deg, #c0392b, #e74c3c); }
+        .math    { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+        .science { background: linear-gradient(135deg, #2980b9, #3498db); }
+        .art     { background: linear-gradient(135deg, #e08e0b, #f1c40f); }
+        .social  { background: linear-gradient(135deg, #6c7a7b, #95a5a6); }
+        .sports  { background: linear-gradient(135deg, #d35400, #e67e22); }
+        .music   { background: linear-gradient(135deg, #8e44ad, #9b59b6); }
+
+        .footer { margin-top: 18px; display: flex; justify-content: center; }
+        .credit {
+            background: #fff; color: var(--muted); border-radius: 999px;
+            padding: 7px 24px; font-weight: 600; font-size: clamp(0.9rem, 1.6vw, 1.1rem);
+            box-shadow: 0 2px 8px rgba(31,58,77,0.1);
+        }
+
+        /* ===== عارض الوسائل: الصورة بملء الشاشة، والأزرار في شريط سفلي رفيع ===== */
+        #media-viewer { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: auto; height: var(--app-h, 100%); z-index: 1000; flex-direction: column; background: #16222b; }
+        body.viewing .exit-fixed { display: none; }
+
+        .stage { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 4px; overflow: hidden; touch-action: none; }
+        #displayed-image { display: block; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity 0.3s ease; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-user-drag: none; will-change: transform; }
+        #displayed-image.show { opacity: 1; }
+        #img-error {
+            display: none; color: #fff; text-align: center; font-size: 1.2rem; line-height: 1.9;
+            background: rgba(255,255,255,0.08); border: 2px dashed rgba(255,255,255,0.4);
+            border-radius: 16px; padding: 24px 30px;
+        }
+
+        .viewer-bar {
+            flex: none; height: 52px; background: #0f1a21; border-top: 3px solid var(--subject, #2c3e50);
+            display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 12px;
+        }
+        .bar-btn {
+            font-family: inherit; font-weight: 700; font-size: 0.9rem; color: #fff; border: none;
+            border-radius: 999px; padding: 6px 12px; cursor: pointer; white-space: nowrap;
+        }
+        .bar-home { background: rgba(255,255,255,0.18); }
+        .bar-home:hover { background: rgba(255,255,255,0.3); }
+        .bar-exit { background: #c0392b; }
+        .bar-exit:hover { background: #a93226; }
+        .pager { display: flex; align-items: center; gap: 12px; }
+        .counter { color: #fff; font-weight: 700; direction: ltr; min-width: 56px; text-align: center; font-size: 1.05rem; }
+        .round-btn {
+            width: 38px; height: 38px; border-radius: 50%; border: none; cursor: pointer;
+            background: #fff; color: var(--ink); font-size: 1.5rem; font-weight: 700; line-height: 1; padding: 0 0 4px;
+        }
+        .round-btn:active { transform: scale(0.92); }
+
+        /* على الكمبيوتر: الشريط عمودي على الجانب الأيسر لتكبير الصورة لأقصى حد */
+        @media (orientation: landscape) {
+            #media-viewer { flex-direction: row; }
+            .viewer-bar {
+                flex-direction: column; width: 90px; height: auto;
+                border-top: none; border-right: 3px solid var(--subject, #2c3e50);
+                padding: 14px 8px; justify-content: space-between;
+            }
+            .bar-btn { width: 100%; padding: 10px 4px; font-size: 0.95rem; text-align: center; }
+            .pager { flex-direction: column; gap: 12px; }
+            .round-btn { width: 46px; height: 46px; font-size: 1.7rem; }
+            .counter { min-width: 0; }
+        }
+
+        .nav-btn {
+            padding: 12px 26px; border-radius: 999px; border: none; background: var(--gold); color: #fff;
+            font-family: inherit; font-weight: 700; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 0 rgba(0,0,0,0.3);
+        }
+
+        /* ===== شاشة الوداع ===== */
+        #goodbye {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: auto; height: var(--app-h, 100%); z-index: 2000;
+            background: linear-gradient(160deg, #1f3a4d, #2c5a6e); color: #fff;
+            flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center; padding: 20px;
+        }
+        #goodbye h2 { font-family: var(--font-title); font-size: clamp(1.8rem, 5vw, 2.6rem); margin: 0; }
+        #goodbye p { margin: 0; opacity: 0.85; }
+
+
+        /* ===== الجوال (رأسي): الصفحة الرئيسية في شاشة واحدة بدون سكرول ===== */
+        @media (orientation: portrait) {
+            html, body { overflow: hidden; overscroll-behavior: none; }
+            body {
+                height: var(--app-h, 100dvh); min-height: 0;
+                padding: 8px 12px; align-items: stretch;
+            }
+            #main-content { height: 100%; justify-content: space-between; }
+            .header { margin-bottom: 6px; flex: none; }
+            .logo-card { margin-bottom: 2px; }
+            .logo { height: calc(var(--app-h, 100vh) * 0.26); max-height: 270px; }
+            .header h1 { font-size: clamp(1.05rem, 4.8vw, 1.5rem); line-height: 1.45; }
+            .divider { margin: 0 auto; font-size: 1.1rem; }
+            .menu-grid {
+                flex: 1; min-height: 0; padding-bottom: 0;
+                grid-template-rows: repeat(4, minmax(0, 1fr)); gap: 8px;
+            }
+            .btn { height: auto; min-height: 0; padding: 2px; gap: 1px; font-size: clamp(0.85rem, 3.7vw, 1.05rem); box-shadow: 0 4px 0 rgba(0,0,0,0.35), 0 6px 9px rgba(0,0,0,0.2); }
+            .btn .ico { font-size: 1.2em; }
+            .footer { flex: none; width: 100%; max-width: 480px; margin-top: 8px; justify-content: space-between; align-items: center; gap: 8px; }
+            .credit { font-size: 0.8rem; padding: 5px 10px; }
+            .exit-fixed { position: static; padding: 6px 14px; font-size: 0.85rem; }
+            .viewer-bar { height: 52px; }
+        }
+
+        @media (orientation: landscape) and (max-height: 520px) {
+            .logo { height: clamp(80px, 30vh, 140px); }
+            .header h1 { font-size: clamp(1rem, 2.6vw, 1.5rem); line-height: 1.4; }
+            .btn { height: clamp(48px, 15vh, 70px); font-size: 0.9rem; }
+            .menu-grid .btn .ico { font-size: 1.1em; }
+            .menu-grid { gap: 8px; }
+            .menu-grid .btn { border-radius: 14px; }
+            .footer { margin-top: 8px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .btn { animation: none; }
+            #displayed-image { transition: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="main-content">
+        <div class="header">
+            <div class="logo-card">
+                <img class="logo" src="logo.png" alt="وزارة التعليم - المديرية العامة للتعليم بمحافظة شمال الباطنة - دائرة تطوير الأداء المدرسي">
+            </div>
+            <h1>نَماذجُ مِنَ الْوَسائلِ التَّعليميَّةِ</h1>
+            <div class="divider">۞</div>
+        </div>
+
+        <div class="menu-grid" id="menu-grid"></div>
+
+        <div class="footer">
+            <div class="credit">إعداد : ناصر ربيع سالم الجابري</div>
+            <button class="exit-fixed" onclick="exitApp()">✕ خروج</button>
+        </div>
+    </div>
+
+    <div id="media-viewer">
+        <div class="stage" id="stage">
+            <img id="displayed-image" src="" alt="صورة الوسيلة">
+            <div id="img-error">تعذّر تحميل هذه الصورة.<br>تأكد من وجودها في المجلد بصيغة png وبالاسم الصحيح.</div>
+        </div>
+        <div class="viewer-bar">
+            <button class="bar-btn bar-home" onclick="closeMedia()">الرئيسية</button>
+            <div class="pager">
+                <button class="round-btn" onclick="changeSlide(-1)" aria-label="السابق">›</button>
+                <div class="counter" id="counter"></div>
+                <button class="round-btn" onclick="changeSlide(1)" aria-label="التالي">‹</button>
+            </div>
+            <button class="bar-btn bar-exit" onclick="exitApp()">✕ خروج</button>
+        </div>
+    </div>
+
+    <div id="goodbye">
+        <h2>شكرًا لك، إلى اللقاء</h2>
+        <p>تم إنهاء البرنامج.</p>
+        <p id="bye-note" style="display:none">للخروج اضغط زر الرئيسية في جهازك.</p>
+        <button class="nav-btn" id="bye-back" style="display:none" onclick="backFromGoodbye()">العودة إلى البرنامج</button>
+    </div>
+
+    <script>
+        // ارتفاع الشاشة الفعلي المرئي (يعالج شريط المتصفح في أندرويد وآيفون)
+        function setAppHeight() { document.documentElement.style.setProperty('--app-h', window.innerHeight + 'px'); }
+        setAppHeight();
+        window.addEventListener('resize', setAppHeight);
+        window.addEventListener('orientationchange', () => setTimeout(setAppHeight, 200));
+
+        // بيانات المواد: الاسم، الأيقونة، اللون، عدد الصور
+        const SUBJECTS = {
+            islamic: { name: 'التربية الإسلامية',   icon: '🕌', color: '#3b5aa8', count: 6 },
+            arabic:  { name: 'اللغة العربية',       icon: '📖', color: '#c0392b', count: 4 },
+            math:    { name: 'الرياضيات',           icon: '➗', color: '#1f9a54', count: 5 },
+            science: { name: 'العلوم',              icon: '🔬', color: '#2980b9', count: 5 },
+            art:     { name: 'الفنون البصرية',      icon: '🎨', color: '#d9820a', count: 4 },
+            social:  { name: 'الدراسات الاجتماعية', icon: '🌍', color: '#5f6e6f', count: 4 },
+            sports:  { name: 'التربية الرياضية',    icon: '⚽', color: '#d35400', count: 4 },
+            music:   { name: 'المهارات الموسيقية',  icon: '🎵', color: '#8e44ad', count: 4 }
+        };
+
+        let currentFolder = '';
+        let currentIdx = 1;
+        let total = 1;
+
+        const grid = document.getElementById('menu-grid');
+        Object.keys(SUBJECTS).forEach((key, i) => {
+            const s = SUBJECTS[key];
+            const b = document.createElement('button');
+            b.className = 'btn ' + key;
+            b.style.setProperty('--i', i);
+            b.innerHTML = '<span class="ico">' + s.icon + '</span><span>' + s.name + '</span>';
+            b.onclick = () => openMedia(key);
+            grid.appendChild(b);
+        });
+
+        const img = document.getElementById('displayed-image');
+        const errBox = document.getElementById('img-error');
+        img.addEventListener('load', () => { errBox.style.display = 'none'; img.style.display = ''; img.classList.add('show'); });
+        img.addEventListener('error', () => { img.classList.remove('show'); img.style.display = 'none'; errBox.style.display = 'block'; });
+
+        function isViewerOpen() { return document.getElementById('media-viewer').style.display === 'flex'; }
+
+        function openMedia(folder) {
+            const s = SUBJECTS[folder];
+            currentFolder = folder;
+            currentIdx = 1;
+            total = s.count;
+            document.getElementById('media-viewer').style.setProperty('--subject', s.color);
+            updateImage();
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('media-viewer').style.display = 'flex';
+            document.body.classList.add('viewing');
+        }
+
+        function preload(idx) {
+            const p = new Image();
+            p.src = 'images/' + currentFolder + '/' + idx + '.png';
+        }
+
+        function updateImage() {
+            if (typeof resetZoom === 'function') resetZoom();
+            img.classList.remove('show');
+            img.style.display = '';
+            errBox.style.display = 'none';
+            img.src = 'images/' + currentFolder + '/' + currentIdx + '.png';
+            document.getElementById('counter').textContent = currentIdx + ' / ' + total;
+            if (currentIdx < total) preload(currentIdx + 1);
+            if (currentIdx > 1) preload(currentIdx - 1);
+            document.querySelector('#media-viewer .round-btn').style.opacity = currentIdx === 1 ? '0.35' : '1';
+        }
+
+        function changeSlide(dir) {
+            const next = currentIdx + dir;
+            if (next > total) { closeMedia(); return; } // انتهت الصور: العودة إلى الرئيسية
+            if (next < 1) return;                        // أول صورة: لا رجوع للخلف
+            currentIdx = next;
+            updateImage();
+        }
+
+        function closeMedia() {
+            document.getElementById('main-content').style.display = 'flex';
+            document.getElementById('media-viewer').style.display = 'none';
+            document.body.classList.remove('viewing');
+        }
+
+        function isStandalone() {
+            return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+        }
+
+        function exitApp() {
+            document.getElementById('media-viewer').style.display = 'none';
+            document.body.classList.remove('viewing');
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('bye-note').style.display = 'none';
+            document.getElementById('bye-back').style.display = 'none';
+            document.getElementById('goodbye').style.display = 'flex';
+            setTimeout(() => {
+                window.close();
+                setTimeout(() => {
+                    if (window.closed) return;
+                    if (isStandalone()) {
+                        // داخل التطبيق المثبّت: النظام لا يسمح بالإغلاق من الكود
+                        document.getElementById('bye-note').style.display = 'block';
+                        document.getElementById('bye-back').style.display = 'inline-block';
+                    } else {
+                        window.location.href = 'about:blank'; // في المتصفح: صفحة فارغة بدل البرنامج
+                    }
+                }, 300);
+            }, 900);
+        }
+
+        function backFromGoodbye() {
+            document.getElementById('goodbye').style.display = 'none';
+            document.getElementById('main-content').style.display = 'flex';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (!isViewerOpen()) return;
+            if (e.key === 'ArrowLeft') changeSlide(1);
+            else if (e.key === 'ArrowRight') changeSlide(-1);
+            else if (e.key === 'Escape') closeMedia();
+        });
+
+        // ===== التكبير بالأصابع + السحب + النقر المزدوج =====
+        const stage = document.getElementById('stage');
+        ['gesturestart', 'gesturechange'].forEach(ev => stage.addEventListener(ev, e => e.preventDefault())); // آيفون
+        let zoom = 1, panX = 0, panY = 0;
+        let startDist = 0, startZoom = 1, startMid = null, startPan = null;
+        let lastX = 0, lastY = 0, swipeX = null, multi = false, lastTap = 0;
+
+        function applyZoom() {
+            img.style.transform = 'translate(' + panX + 'px,' + panY + 'px) scale(' + zoom + ')';
+        }
+        function resetZoom() { zoom = 1; panX = 0; panY = 0; applyZoom(); }
+        function clampPan() {
+            const mx = img.offsetWidth * (zoom - 1) / 2;
+            const my = img.offsetHeight * (zoom - 1) / 2;
+            panX = Math.max(-mx, Math.min(mx, panX));
+            panY = Math.max(-my, Math.min(my, panY));
+        }
+        function center() {
+            const r = stage.getBoundingClientRect();
+            return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+        }
+        function dist(t) { return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY); }
+        function mid(t) { return { x: (t[0].clientX + t[1].clientX) / 2, y: (t[0].clientY + t[1].clientY) / 2 }; }
+
+        stage.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                multi = true; swipeX = null;
+                startDist = dist(e.touches); startZoom = zoom;
+                startMid = mid(e.touches); startPan = { x: panX, y: panY };
+            } else if (e.touches.length === 1) {
+                const t = e.touches[0];
+                lastX = t.clientX; lastY = t.clientY;
+                if (!multi) swipeX = t.clientX;
+                // نقر مزدوج: تكبير / إرجاع
+                const now = Date.now();
+                if (now - lastTap < 300 && !multi) {
+                    const c = center();
+                    if (zoom > 1) { resetZoom(); }
+                    else {
+                        zoom = 2.5;
+                        panX = (t.clientX - c.x) * (1 - zoom);
+                        panY = (t.clientY - c.y) * (1 - zoom);
+                        clampPan(); applyZoom();
+                    }
+                    swipeX = null; lastTap = 0;
+                } else { lastTap = now; }
+            }
+        }, { passive: true });
+
+        stage.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (e.touches.length === 2 && startMid) {
+                const m = mid(e.touches), c = center();
+                const nz = Math.max(1, Math.min(5, startZoom * dist(e.touches) / startDist));
+                const px = (startMid.x - c.x - startPan.x) / startZoom;
+                const py = (startMid.y - c.y - startPan.y) / startZoom;
+                zoom = nz;
+                panX = m.x - c.x - px * nz;
+                panY = m.y - c.y - py * nz;
+                clampPan(); applyZoom();
+            } else if (e.touches.length === 1 && zoom > 1) {
+                const t = e.touches[0];
+                panX += t.clientX - lastX; panY += t.clientY - lastY;
+                lastX = t.clientX; lastY = t.clientY;
+                clampPan(); applyZoom();
+            }
+        }, { passive: false });
+
+        stage.addEventListener('touchend', (e) => {
+            if (e.touches.length === 1) {
+                // بقي إصبع واحد بعد التكبير: نكمل التحريك منه
+                lastX = e.touches[0].clientX; lastY = e.touches[0].clientY;
+                startMid = null;
+                return;
+            }
+            if (e.touches.length > 0) return;
+            if (zoom < 1.05) resetZoom();
+            if (!multi && swipeX !== null && zoom === 1) {
+                const dx = e.changedTouches[0].clientX - swipeX;
+                if (Math.abs(dx) >= 50) changeSlide(dx < 0 ? 1 : -1); // السحب لليسار = التالي
+            }
+            swipeX = null; multi = false; startMid = null;
+        }, { passive: true });
+
+        // تسجيل عامل الخدمة (العمل بدون إنترنت + إمكانية التثبيت)
+        if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+            window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+        }
+    </script>
+</body>
+</html>
